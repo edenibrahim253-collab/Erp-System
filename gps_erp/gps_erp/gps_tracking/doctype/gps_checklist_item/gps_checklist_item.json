@@ -1,0 +1,20 @@
+{
+ "doctype": "DocType",
+ "name": "GPS Checklist Item",
+ "module": "GPS Tracking",
+ "istable": 1,
+ "field_order": [
+  "item",
+  "result",
+  "remarks"
+ ],
+ "fields": [
+  {"fieldname": "item", "fieldtype": "Data", "label": "Checklist Item", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "result", "fieldtype": "Select", "label": "Result", "options": "\nPass\nFail\nNot Applicable", "in_list_view": 1},
+  {"fieldname": "remarks", "fieldtype": "Small Text", "label": "Remarks", "in_list_view": 1}
+ ],
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "engine": "InnoDB"
+}

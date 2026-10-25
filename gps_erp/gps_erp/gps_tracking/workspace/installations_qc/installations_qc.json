@@ -1,0 +1,66 @@
+{
+ "category": "Modules",
+ "charts": [],
+ "content": "",
+ "creation": "2026-10-25 18:00:00.000000",
+ "customization": 0,
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "document_view": "List",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "tool",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Installations & QC",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GPS Installation",
+   "link_count": 0,
+   "link_to": "GPS Installation",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GPS Service Inspection",
+   "link_count": 0,
+   "link_to": "GPS Service Inspection",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Non Conformance",
+   "link_count": 0,
+   "link_to": "Non Conformance",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  }
+ ],
+ "modified": "2026-10-25 18:00:00.000000",
+ "module": "GPS Tracking",
+ "name": "Installations & QC",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "GPS Fleet Manager"},
+  {"role": "GPS Technician"},
+  {"role": "GPS Support Agent"}
+ ],
+ "sequence": 1.2,
+ "title": "Installations & QC",
+ "write_access": 0
+}

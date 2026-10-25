@@ -160,6 +160,17 @@ doc_events = {
 	},
 }
 
+# Row-level security: technicians only see installations they own or are assigned to
+permission_query_conditions = {
+	"GPS Installation": "gps_erp.gps_tracking.doctype.gps_installation.gps_installation.get_permission_query_conditions",
+}
+
+has_permission = {
+	"GPS Installation": "gps_erp.gps_tracking.doctype.gps_installation.gps_installation.has_permission",
+}
+
+after_migrate = ["gps_erp.gps_tracking.setup_workflow.sync_installation_workflow"]
+
 # Fixtures (git-managed customizations; imported on every bench migrate)
 # ---------------------------------------------------------------------
 
