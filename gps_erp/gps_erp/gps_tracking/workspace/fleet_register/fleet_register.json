@@ -33,9 +33,29 @@
    "onload": 0,
    "type": "DocType",
    "dependencies": ""
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GPS Device Assignments",
+   "link_count": 0,
+   "link_to": "GPS Device Assignment",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GPS SIM Assignments",
+   "link_count": 0,
+   "link_to": "GPS SIM Assignment",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
   }
  ],
- "modified": "2026-10-25 12:00:00.000000",
+ "modified": "2026-10-25 16:00:00.000000",
  "module": "GPS Tracking",
  "name": "Fleet Register",
  "number_cards": [],
