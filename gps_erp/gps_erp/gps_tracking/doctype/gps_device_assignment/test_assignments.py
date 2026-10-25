@@ -4,6 +4,8 @@ import unittest
 import frappe
 from frappe.utils import add_days, today
 
+from gps_erp.gps_tracking.utils import make_test_imei
+
 GPS_IMEI_ITEM = "_Test GPS Tracker"
 GPS_CUSTOMER_GROUP = "_Test GPS Fleet"
 
@@ -56,7 +58,7 @@ def make_fixture_data():
 		serial = frappe.get_doc(
 			{
 				"doctype": "Serial No",
-				"serial_no": unique_digits(15),
+				"serial_no": make_test_imei(),
 				"item_code": GPS_IMEI_ITEM,
 				"status": "Active",
 			}
