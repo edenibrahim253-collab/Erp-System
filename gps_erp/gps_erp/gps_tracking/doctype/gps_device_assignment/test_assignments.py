@@ -148,6 +148,25 @@ class TestGPSAssignments(unittest.TestCase):
 		self.delete_assignment(first)
 		self.delete_assignment(second)
 
+	def test_device_boundary_day_overlap_rejected(self):
+		# Closed range must end the day before the next one starts.
+		first = self.make_assignment("GPS Device Assignment", returned_on="2026-01-31")
+		try:
+			with self.assertRaises(frappe.ValidationError):
+				self.make_assignment("GPS Device Assignment", assigned_on="2026-01-31")
+		finally:
+			self.delete_assignment(first)
+
+	def test_cancelled_assignment_does_not_block_reassignment(self):
+		doc = self.make_assignment("GPS Device Assignment", returned_on="2026-01-31")
+		doc.submit()
+		doc.cancel()
+		replacement = self.make_assignment(
+			"GPS Device Assignment", assigned_on="2026-01-01", returned_on="2026-01-31"
+		)
+		self.assertEqual(replacement.status, "Closed")
+		self.delete_assignment(replacement)
+
 	def test_submit_sets_serial_status_and_cancel_reverts(self):
 		doc = self.make_assignment("GPS Device Assignment", returned_on=None)
 		doc.submit()
