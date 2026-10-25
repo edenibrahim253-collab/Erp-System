@@ -206,6 +206,21 @@ class TestGPSAssignments(unittest.TestCase):
 		with self.assertRaises(frappe.ValidationError):
 			self.make_assignment("GPS Device Assignment", returned_on=add_days(today(), 5))
 
+	def test_submitted_assignment_cannot_be_edited(self):
+		doc = self.make_assignment("GPS Device Assignment")
+		doc.submit()
+		# re-fetch: the in-memory copy submitted via the Save transition keeps a
+		# stale _original_modified, so save() on it would trip the timestamp check
+		# before Frappe can report the docstatus violation.
+		fresh = frappe.get_doc("GPS Device Assignment", doc.name)
+		with self.assertRaises(frappe.ValidationError):
+			fresh.returned_on = "2026-06-01"
+			fresh.save()
+		# the documented path is cancel + new assignment; overlap rules then apply
+		doc.reload()
+		doc.cancel()
+		self.delete_assignment(doc)
+
 	def test_sim_overlap_rejected(self):
 		first = self.make_assignment("GPS SIM Assignment")
 		try:
