@@ -6,6 +6,16 @@ QC_PROCEDURE = "GPS Installation Quality Check"
 
 
 class GPSServiceInspection(Document):
+	"""QC rules:
+	- Inspections may only be recorded while the installation is Installed,
+	  Awaiting QC or QC Failed (re-inspection after rework).
+	- A failed inspection links to one open Non Conformance per installation:
+	  repeated failures while an NC is Open reuse it; a new NC is raised only
+	  when none is open. Cancelling an inspection does not close the NC.
+	- Cancelling recomputes the installation status from the newest remaining
+	  submitted inspection (Installed when none is left).
+	"""
+
 	def validate(self):
 		self.validate_installation()
 		if self.result == "Fail" and not (self.findings or "").strip():
@@ -31,10 +41,34 @@ class GPSServiceInspection(Document):
 			frappe.db.set_value("GPS Installation", self.installation, "status", "QC Failed", update_modified=False)
 
 	def on_cancel(self):
-		if frappe.db.exists("GPS Installation", self.installation):
-			frappe.db.set_value("GPS Installation", self.installation, "status", "Awaiting QC", update_modified=False)
+		if not frappe.db.exists("GPS Installation", self.installation):
+			return
+		remaining = frappe.db.sql(
+			"""SELECT result FROM `tabGPS Service Inspection`
+			WHERE installation = %s AND docstatus = 1 AND name != %s
+			ORDER BY inspection_date DESC, creation DESC LIMIT 1""",
+			(self.installation, self.name),
+			pluck="result",
+		)
+		if remaining:
+			status = "QC Passed" if remaining[0] == "Pass" else "QC Failed"
+		else:
+			status = "Installed"
+		frappe.db.set_value("GPS Installation", self.installation, "status", status, update_modified=False)
 
 	def create_non_conformance(self):
+		open_nc = frappe.db.sql(
+			"""SELECT i.non_conformance FROM `tabGPS Service Inspection` i
+			INNER JOIN `tabNon Conformance` n ON n.name = i.non_conformance
+			WHERE i.installation = %s AND i.docstatus = 1 AND i.name != %s
+			AND i.non_conformance IS NOT NULL AND i.non_conformance != ''
+			AND n.status = 'Open'
+			ORDER BY i.creation DESC LIMIT 1""",
+			(self.installation, self.name),
+		)
+		if open_nc:
+			return frappe.get_doc("Non Conformance", open_nc[0][0])
+
 		procedure = frappe.db.get_value("Quality Procedure", QC_PROCEDURE, "name")
 		if not procedure:
 			procedure = frappe.get_doc(

@@ -1,6 +1,11 @@
 import frappe
 
 WORKFLOW_NAME = "GPS Installation Workflow"
+DOCUMENT_TYPE = "GPS Installation"
+# The workflow drives the DocType's own `status` Select field, so the Python
+# controllers (GPSInstallation.on_submit, GPS Service Inspection) and the
+# workflow buttons read and write the same field — one status, one design.
+STATE_FIELD = "status"
 
 STATES = [
 	{"state": "Pending", "doc_status": "0", "allow_edit": "GPS Technician"},
@@ -23,10 +28,42 @@ TRANSITIONS = [
 ]
 
 
-def sync_installation_workflow():
-	if frappe.flags.in_test and not frappe.conf.get("developer_mode"):
-		return
+def _target_signature():
+	return (
+		STATE_FIELD,
+		sorted((s["state"], s["doc_status"], s["allow_edit"]) for s in STATES),
+		sorted(
+			(t["state"], t["action"], t["next_state"], t["allowed"])
+			for t in _target_transitions()
+		),
+	)
 
+
+def _current_signature(workflow):
+	return (
+		workflow.workflow_state_field,
+		sorted((s.state, s.doc_status, s.allow_edit) for s in workflow.states),
+		sorted((t.state, t.action, t.next_state, t.allowed) for t in workflow.transitions),
+	)
+
+
+def _target_transitions():
+	return [
+		{"state": state, "action": action, "next_state": next_state, "allowed": role}
+		for state, action, next_state, roles in TRANSITIONS
+		for role in roles
+	]
+
+
+def sync_installation_workflow():
+	"""Ensure the GPS Installation workflow matches the code definition.
+
+	The workflow states/transitions are managed entirely by this app: any
+	structural drift is reconciled in place (the Workflow document is never
+	deleted and recreated, so history, naming and admin choices survive).
+	`is_active` is only set on first creation; afterwards administrators may
+	disable the workflow and migrations will not re-enable it.
+	"""
 	for state in STATES:
 		if not frappe.db.exists("Workflow State", state["state"]):
 			frappe.get_doc(
@@ -40,22 +77,30 @@ def sync_installation_workflow():
 			).insert(ignore_permissions=True)
 
 	if frappe.db.exists("Workflow", WORKFLOW_NAME):
-		frappe.delete_doc("Workflow", WORKFLOW_NAME, force=True, ignore_on_trash=True)
+		workflow = frappe.get_doc("Workflow", WORKFLOW_NAME)
+		if workflow.document_type == DOCUMENT_TYPE and _current_signature(workflow) == _target_signature():
+			return
+		workflow.workflow_state_field = STATE_FIELD
+		workflow.set("states", [])
+		workflow.set("transitions", [])
+		for state in STATES:
+			workflow.append("states", dict(state))
+		for transition in _target_transitions():
+			workflow.append("transitions", transition)
+		workflow.save(ignore_permissions=True)
+		return
 
 	workflow = frappe.get_doc(
 		{
 			"doctype": "Workflow",
 			"workflow_name": WORKFLOW_NAME,
-			"document_type": "GPS Installation",
+			"document_type": DOCUMENT_TYPE,
+			"workflow_state_field": STATE_FIELD,
 			"is_active": 1,
 			"override_status": 0,
 			"send_email_alert": 0,
 			"states": [dict(state) for state in STATES],
-			"transitions": [
-				{"state": state, "action": action, "next_state": next_state, "allowed": role}
-				for state, action, next_state, roles in TRANSITIONS
-				for role in roles
-			],
+			"transitions": _target_transitions(),
 		}
 	)
 	workflow.insert(ignore_permissions=True)

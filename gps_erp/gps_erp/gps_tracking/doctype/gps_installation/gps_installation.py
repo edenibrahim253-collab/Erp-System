@@ -59,6 +59,9 @@ def get_permission_query_conditions(user=None):
 
 
 def has_permission(doc, ptype=None, user=None):
+	"""Row-level access. Returning False (not None) for a technician viewing
+	someone else's record is required: None would fall through to the role's
+	doctype-level permission and leak direct record access."""
 	user = user or frappe.session.user
 	if user == "Administrator":
 		return True
@@ -69,6 +72,10 @@ def has_permission(doc, ptype=None, user=None):
 
 	if "GPS Technician" in roles:
 		employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
-		return doc.owner == user or (employee and doc.technician == employee)
+		if doc.owner == user:
+			return True
+		if employee and doc.technician == employee:
+			return True
+		return False
 
 	return None
