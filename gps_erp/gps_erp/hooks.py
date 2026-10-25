@@ -154,13 +154,21 @@ app_license = "gpl-3.0"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Serial No": {
+		"validate": "gps_erp.gps_tracking.controllers.serial_no.validate",
+	},
+}
+
+# Fixtures (git-managed customizations; imported on every bench migrate)
+# ---------------------------------------------------------------------
+
+fixtures = [
+	{
+		"doctype": "Custom Field",
+		"filters": [["module", "=", "GPS Tracking"]],
+	}
+]
 
 # Scheduled Tasks
 # ---------------

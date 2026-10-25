@@ -1,0 +1,77 @@
+[
+ {
+  "doctype": "Custom Field",
+  "name": "Item-gps_is_device",
+  "module": "GPS Tracking",
+  "dt": "Item",
+  "fieldname": "gps_is_device",
+  "label": "GPS Tracking Device (Serial No = IMEI)",
+  "fieldtype": "Check",
+  "insert_after": "is_stock_item",
+  "default": "0"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Item-gps_device_type",
+  "module": "GPS Tracking",
+  "dt": "Item",
+  "fieldname": "gps_device_type",
+  "label": "GPS Device Type",
+  "fieldtype": "Select",
+  "options": "\nTracker\nDashcam\nTemperature Sensor\nBeacon\nOther",
+  "insert_after": "gps_is_device"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Serial No-gps_device_details_section",
+  "module": "GPS Tracking",
+  "dt": "Serial No",
+  "fieldname": "gps_device_details_section",
+  "label": "GPS Device Details",
+  "fieldtype": "Section Break",
+  "insert_after": "warranty_expiry_date",
+  "collapsible": 1
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Serial No-gps_device_model",
+  "module": "GPS Tracking",
+  "dt": "Serial No",
+  "fieldname": "gps_device_model",
+  "label": "Device Model (e.g. FMC125)",
+  "fieldtype": "Data",
+  "insert_after": "gps_device_details_section"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Serial No-gps_platform_device_id",
+  "module": "GPS Tracking",
+  "dt": "Serial No",
+  "fieldname": "gps_platform_device_id",
+  "label": "Platform Device ID (Wonde / MyTrackX)",
+  "fieldtype": "Data",
+  "insert_after": "gps_device_model"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Serial No-gps_activation_date",
+  "module": "GPS Tracking",
+  "dt": "Serial No",
+  "fieldname": "gps_activation_date",
+  "label": "Platform Activation Date",
+  "fieldtype": "Date",
+  "insert_after": "gps_platform_device_id"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Serial No-gps_asset_status",
+  "module": "GPS Tracking",
+  "dt": "Serial No",
+  "fieldname": "gps_asset_status",
+  "label": "GPS Asset Status",
+  "fieldtype": "Select",
+  "options": "In Stock\nAssigned\nInstalled\nReturned\nFaulty\nRetired",
+  "default": "In Stock",
+  "insert_after": "gps_activation_date"
+ }
+]
