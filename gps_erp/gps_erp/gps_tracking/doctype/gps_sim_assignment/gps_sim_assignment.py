@@ -7,6 +7,16 @@ from gps_erp.gps_tracking.utils import ranges_overlap
 
 
 class GPSSIMAssignment(Document):
+	"""Lifecycle rules:
+	- Active = no released_on; Closed = released_on set (future dates rejected).
+	- Overlap checks run against every non-cancelled record, drafts included,
+	  so a draft already reserves the date range for the SIM.
+	- Only a submitted Active assignment flips a Reserved SIM to Activated.
+	- Cancel reverts to Reserved only when the SIM still reads Activated
+	  (not Blocked/Retired/...) and no other submitted Active assignment
+	  covers it.
+	"""
+
 	def validate(self):
 		self.set_status()
 		self.validate_dates()

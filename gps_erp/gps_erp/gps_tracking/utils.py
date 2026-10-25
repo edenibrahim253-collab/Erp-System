@@ -8,7 +8,11 @@ FAR_FUTURE = datetime.date(9999, 12, 31)
 
 
 def ranges_overlap(start_a, end_a, start_b, end_b):
-	"""Two closed date ranges, an empty end meaning 'still open'."""
+	"""Two closed date ranges, an empty end meaning 'still open'.
+
+	Touching boundary dates overlap: a range ending 2026-01-31 conflicts with
+	one starting 2026-01-31. Sequential assignments must start the next day.
+	"""
 	a_start = getdate(start_a)
 	a_end = getdate(end_a) or FAR_FUTURE
 	b_start = getdate(start_b)

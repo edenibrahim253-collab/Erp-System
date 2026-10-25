@@ -7,6 +7,16 @@ from gps_erp.gps_tracking.utils import ranges_overlap
 
 
 class GPSDeviceAssignment(Document):
+	"""Lifecycle rules:
+	- Active = no returned_on; Closed = returned_on set (future dates rejected).
+	- Overlap checks run against every non-cancelled record, drafts included,
+	  so a draft already reserves the date range for the device.
+	- Only a submitted Active assignment marks the device Assigned.
+	- Cancel reverts to In Stock only when the device still reads Assigned
+	  (not Installed/Faulty/...) and no other submitted Active assignment
+	  covers it.
+	"""
+
 	def validate(self):
 		self.set_status()
 		self.validate_dates()
