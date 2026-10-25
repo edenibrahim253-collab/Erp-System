@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 WORKFLOW_NAME = "GPS Installation Workflow"
 DOCUMENT_TYPE = "GPS Installation"
@@ -20,6 +21,8 @@ STATES = [
 TRANSITIONS = [
 	("Pending", "Start Work", "In Progress", ["GPS Technician", "GPS Fleet Manager", "System Manager"]),
 	("In Progress", "Mark Installed", "Installed", ["GPS Technician", "GPS Fleet Manager", "System Manager"]),
+	# direct Submit button path: Save (draft) > Submit jumps straight to Installed
+	("Pending", "Mark Installed", "Installed", ["GPS Technician", "GPS Fleet Manager", "System Manager"]),
 	("Installed", "Send to QC", "Awaiting QC", ["GPS Fleet Manager", "System Manager"]),
 	("Awaiting QC", "Pass QC", "QC Passed", ["GPS Fleet Manager", "System Manager"]),
 	("Awaiting QC", "Fail QC", "QC Failed", ["GPS Fleet Manager", "System Manager"]),
@@ -104,3 +107,40 @@ def sync_installation_workflow():
 		}
 	)
 	workflow.insert(ignore_permissions=True)
+
+
+# --- the only sanctioned way for controllers to move an installation's status ---
+
+# Reverse moves allowed solely when a QC document is cancelled (data
+# correction, gated by the cancel permission on GPS Service Inspection).
+CORRECTION_MOVES = {
+	("QC Passed", "Installed"),
+	("QC Passed", "QC Failed"),
+	("QC Failed", "Installed"),
+	("QC Failed", "QC Passed"),
+	("Awaiting QC", "Installed"),
+}
+
+FORWARD_MOVES = {(state, next_state) for state, _action, next_state, _roles in TRANSITIONS}
+
+
+def set_installation_status(name, target, correction=False):
+	"""Move a GPS Installation to `target` only along the workflow graph.
+
+	Every scripted status write goes through here, so a controller cannot
+	jump an installation to a state no defined transition leads to. Pass
+	`correction=True` only from QC cancellation, which rolls the status back
+	to what the remaining submitted inspections say.
+	"""
+	current = frappe.db.get_value("GPS Installation", name, "status")
+	if current == target:
+		return
+
+	allowed = FORWARD_MOVES | (CORRECTION_MOVES if correction else set())
+	if (current, target) not in allowed:
+		frappe.throw(
+			_("Status move {0} \u2192 {1} is not a valid workflow transition for installation {2}.").format(
+				current, target, name
+			)
+		)
+	frappe.db.set_value("GPS Installation", name, "status", target, update_modified=False)

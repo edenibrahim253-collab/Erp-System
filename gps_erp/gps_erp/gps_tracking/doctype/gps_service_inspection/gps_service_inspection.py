@@ -2,18 +2,24 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from gps_erp.gps_tracking.setup_workflow import set_installation_status
+
 QC_PROCEDURE = "GPS Installation Quality Check"
 
 
 class GPSServiceInspection(Document):
 	"""QC rules:
-	- Inspections may only be recorded while the installation is Installed,
-	  Awaiting QC or QC Failed (re-inspection after rework).
+	- Inspections may only be recorded against a submitted installation in
+	  Awaiting QC; the manager sends it there with the "Send to QC" workflow
+	  action, so QC cannot bypass the workflow graph.
+	- Pass/Fail moves the installation along the Pass QC / Fail QC transitions
+	  (setup_workflow.set_installation_status), never by a direct jump.
 	- A failed inspection links to one open Non Conformance per installation:
 	  repeated failures while an NC is Open reuse it; a new NC is raised only
 	  when none is open. Cancelling an inspection does not close the NC.
 	- Cancelling recomputes the installation status from the newest remaining
-	  submitted inspection (Installed when none is left).
+	  submitted inspection (Installed when none is left); every inspection
+	  document stays in the history untouched.
 	"""
 
 	def validate(self):
@@ -22,23 +28,25 @@ class GPSServiceInspection(Document):
 			frappe.throw(_("Describe the findings when the inspection fails."))
 
 	def validate_installation(self):
-		status = frappe.db.get_value("GPS Installation", self.installation, "status")
-		if status not in ("Installed", "Awaiting QC", "QC Failed"):
+		installation = frappe.db.get_value(
+			"GPS Installation", self.installation, ["status", "docstatus"], as_dict=True
+		)
+		if not installation or installation.docstatus != 1 or installation.status != "Awaiting QC":
 			frappe.throw(
-				_("Inspections can only be recorded for installations awaiting or failing QC (current status: {0}).").format(
-					status
-				)
+				_(
+					"Inspections can only be recorded for submitted installations in Awaiting QC (current status: {0})."
+				).format(installation.status if installation else None)
 			)
 
 	def on_submit(self):
 		if self.result == "Pass":
-			frappe.db.set_value("GPS Installation", self.installation, "status", "QC Passed", update_modified=False)
+			set_installation_status(self.installation, "QC Passed")
 			if self.serial_no:
 				frappe.db.set_value("Serial No", self.serial_no, "gps_asset_status", "Installed", update_modified=False)
 		else:
 			nc = self.create_non_conformance()
 			self.db_set("non_conformance", nc.name, update_modified=False)
-			frappe.db.set_value("GPS Installation", self.installation, "status", "QC Failed", update_modified=False)
+			set_installation_status(self.installation, "QC Failed")
 
 	def on_cancel(self):
 		if not frappe.db.exists("GPS Installation", self.installation):
@@ -54,7 +62,7 @@ class GPSServiceInspection(Document):
 			status = "QC Passed" if remaining[0] == "Pass" else "QC Failed"
 		else:
 			status = "Installed"
-		frappe.db.set_value("GPS Installation", self.installation, "status", status, update_modified=False)
+		set_installation_status(self.installation, status, correction=True)
 
 	def create_non_conformance(self):
 		open_nc = frappe.db.sql(
