@@ -1,0 +1,57 @@
+{
+ "category": "Domains",
+ "charts": [],
+ "content": "",
+ "creation": "2026-10-25 14:00:00.000000",
+ "customization": 0,
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "document_view": "List",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "phone",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "SIM Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GPS SIM Card",
+   "link_count": 0,
+   "link_to": "GPS SIM Card",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Providers (Suppliers)",
+   "link_count": 0,
+   "link_to": "Supplier",
+   "onload": 0,
+   "type": "DocType",
+   "dependencies": ""
+  }
+ ],
+ "modified": "2026-10-25 14:00:00.000000",
+ "module": "GPS Tracking",
+ "name": "SIM Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "GPS Fleet Manager"},
+  {"role": "GPS Technician"},
+  {"role": "GPS Support Agent"},
+  {"role": "GPS Finance"}
+ ],
+ "sequence": 1.1,
+ "title": "SIM Management",
+ "write_access": 0
+}
