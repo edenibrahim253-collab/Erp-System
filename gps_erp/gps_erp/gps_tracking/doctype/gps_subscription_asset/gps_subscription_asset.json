@@ -1,0 +1,33 @@
+{
+ "doctype": "DocType",
+ "name": "GPS Subscription Asset",
+ "module": "GPS Tracking",
+ "istable": 1,
+ "field_order": [
+  "vehicle",
+  "serial_no",
+  "column_break_main",
+  "item",
+  "rate",
+  "currency",
+  "billing_section",
+  "billing_status",
+  "effective_from",
+  "effective_to",
+  "remarks"
+ ],
+ "fields": [
+  {"fieldname": "vehicle", "fieldtype": "Link", "label": "Vehicle", "options": "GPS Vehicle", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "serial_no", "fieldtype": "Link", "label": "Device (Serial No / IMEI)", "options": "Serial No", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "column_break_main", "fieldtype": "Column Break"},
+  {"fieldname": "item", "fieldtype": "Link", "label": "Billing Item", "options": "Item", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "rate", "fieldtype": "Currency", "label": "Rate", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "currency", "fieldtype": "Link", "label": "Currency", "options": "Currency"},
+  {"fieldname": "billing_section", "fieldtype": "Section Break", "label": "Billing Lifecycle"},
+  {"fieldname": "billing_status", "fieldtype": "Select", "label": "Billing Status", "options": "Active\nSuspended\nTerminated", "default": "Active", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "effective_from", "fieldtype": "Date", "label": "Effective From", "default": "Today"},
+  {"fieldname": "effective_to", "fieldtype": "Date", "label": "Effective To"},
+  {"fieldname": "remarks", "fieldtype": "Small Text", "label": "Remarks"}
+ ],
+ "engine": "InnoDB"
+}

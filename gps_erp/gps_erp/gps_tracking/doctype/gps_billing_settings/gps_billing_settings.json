@@ -1,0 +1,24 @@
+{
+ "doctype": "DocType",
+ "name": "GPS Billing Settings",
+ "module": "GPS Tracking",
+ "issingle": 1,
+ "field_order": [
+  "enable_auto_billing",
+  "suspension_grace_days",
+  "column_break_main",
+  "finance_approval_threshold"
+ ],
+ "fields": [
+  {"fieldname": "enable_auto_billing", "fieldtype": "Check", "label": "Enable Nightly Subscription Sync", "default": "0"},
+  {"fieldname": "suspension_grace_days", "fieldtype": "Int", "label": "Suspension Grace Days", "default": "5", "description": "A vehicle suspended for no more than this many days in a billing period stays billable (mirrors ERPNext subscription behaviour)."},
+  {"fieldname": "column_break_main", "fieldtype": "Column Break"},
+  {"fieldname": "finance_approval_threshold", "fieldtype": "Currency", "label": "Finance Approval Threshold", "description": "GPS-generated invoices above this value require explicit finance approval before submission."}
+ ],
+ "permissions": [
+  {"role": "System Manager", "read": 1, "write": 1},
+  {"role": "GPS Fleet Manager", "read": 1, "write": 1},
+  {"role": "GPS Finance", "read": 1, "write": 1}
+ ],
+ "engine": "InnoDB"
+}

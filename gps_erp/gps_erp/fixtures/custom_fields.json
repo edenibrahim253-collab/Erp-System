@@ -73,5 +73,16 @@
   "options": "In Stock\nAssigned\nInstalled\nReturned\nFaulty\nRetired",
   "default": "In Stock",
   "insert_after": "gps_activation_date"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Subscription-gps_subscription_assets",
+  "module": "GPS Tracking",
+  "dt": "Subscription",
+  "fieldname": "gps_subscription_assets",
+  "label": "GPS Subscription Assets (per vehicle)",
+  "fieldtype": "Table",
+  "options": "GPS Subscription Asset",
+  "insert_after": "plans"
  }
 ]

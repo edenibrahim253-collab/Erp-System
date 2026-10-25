@@ -158,6 +158,9 @@ doc_events = {
 	"Serial No": {
 		"validate": "gps_erp.gps_tracking.controllers.serial_no.validate",
 	},
+	"Subscription": {
+		"validate": "gps_erp.gps_tracking.doctype.gps_subscription_asset.gps_subscription_asset.validate_subscription_assets",
+	},
 }
 
 # Row-level security: technicians only see installations they own or are assigned to
