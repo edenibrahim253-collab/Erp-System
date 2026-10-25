@@ -1,0 +1,4 @@
+GNU General Public License v3.0 or later.
+
+This app is intended to be distributed under GPLv3 to stay compatible
+with Frappe/ERPNext licensing. Full text: https://www.gnu.org/licenses/gpl-3.0.txt

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "gps_erp"
+authors = [
+    { name = "GPS Tracking Company", email = "dev@gpstracking.example" }
+]
+description = "GPS tracking, fleet, SIM, installation and subscription management for ERPNext"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "license.txt" }
+dynamic = ["version"]
+
+[tool.flit.module]
+name = "gps_erp"
